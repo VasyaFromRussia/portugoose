@@ -1,22 +1,27 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portugoose/verb/mock_data.dart';
 
 final verbProvider = StateNotifierProvider<VerbTrainer, VerbState>(
-  (ref) => VerbTrainer(
-    VerbState(
-      verb: const Verb(
-        infinitive: "beber",
-        conjugation: Conjugation.second,
-      ),
-    ),
-  ),
+  (ref) => VerbTrainer(),
 );
 
 class VerbTrainer extends StateNotifier<VerbState> {
-  VerbTrainer(VerbState state) : super(state);
+  VerbTrainer() : super(VerbState(verb: verbs.first));
+
+  var currentIndex = 0;
+
+  void next() {
+    currentIndex++;
+    if (currentIndex < verbs.length) {
+      state = VerbState(verb: verbs[currentIndex]);
+    }
+  }
 
   void verify(Map<VerbForm, String> forms) {
     final validForms = state.verb.conjugate();
-    final remarks = Map.fromEntries(validForms.entries.where((element) => element.value != forms[element.key]));
+    final remarks = Map.fromEntries(
+      validForms.entries.where((element) => element.value.normalized != forms[element.key]?.normalized),
+    );
     state = VerbState(verb: state.verb, remarks: remarks);
   }
 }
@@ -31,6 +36,10 @@ class VerbState {
   final Map<VerbForm, String>? remarks;
 }
 
+extension VerbStateExtensions on VerbState {
+  bool get isPassed => remarks?.isEmpty == true;
+}
+
 class Verb {
   const Verb({
     required this.infinitive,
@@ -43,12 +52,21 @@ class Verb {
   final Map<VerbForm, String> exclusions;
 
   Map<VerbForm, String> conjugate() {
-    final withoutEnding = infinitive.substring(0, infinitive.length - conjugation.infinitiveEnding.length);
-    return conjugation.presentEndings.map((form, ending) => MapEntry(form, "$withoutEnding$ending"));
+    var result = <VerbForm, String>{};
+    if (conjugation != Conjugation.irregular) {
+      final withoutEnding = infinitive.substring(0, infinitive.length - conjugation.infinitiveEnding.length);
+      result = conjugation.presentEndings.map((form, ending) => MapEntry(form, "$withoutEnding$ending"));
+    }
+
+    exclusions.forEach((key, value) {
+      result[key] = value;
+    });
+
+    return result;
   }
 }
 
-enum Conjugation { first, second, third }
+enum Conjugation { first, second, third, irregular }
 
 extension ConjugationExtension on Conjugation {
   String get infinitiveEnding {
@@ -59,6 +77,8 @@ extension ConjugationExtension on Conjugation {
         return "er";
       case Conjugation.third:
         return "ir";
+      case Conjugation.irregular:
+        throw IrregularVerbException();
     }
   }
 
@@ -88,6 +108,8 @@ extension ConjugationExtension on Conjugation {
           VerbForm(number: Number.plural, person: Person.first): "amos",
           VerbForm(number: Number.plural, person: Person.third): "am",
         };
+      case Conjugation.irregular:
+        throw IrregularVerbException();
     }
   }
 }
@@ -113,3 +135,9 @@ const validForms = [
   VerbForm(number: Number.plural, person: Person.first),
   VerbForm(number: Number.plural, person: Person.third),
 ];
+
+class IrregularVerbException implements Exception {}
+
+extension on String {
+  String get normalized => trim().toLowerCase();
+}
