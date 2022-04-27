@@ -6,14 +6,14 @@ final verbProvider = StateNotifierProvider<VerbTrainer, VerbState>(
 );
 
 class VerbTrainer extends StateNotifier<VerbState> {
-  VerbTrainer() : super(VerbState(verb: verbs.first));
+  VerbTrainer() : super(VerbState(verb: verbs.first, index: 0, total: verbs.length));
 
   var currentIndex = 0;
 
   void next() {
     currentIndex++;
     if (currentIndex < verbs.length) {
-      state = VerbState(verb: verbs[currentIndex]);
+      state = VerbState(verb: verbs[currentIndex], index: currentIndex, total: verbs.length);
     }
   }
 
@@ -22,18 +22,22 @@ class VerbTrainer extends StateNotifier<VerbState> {
     final remarks = Map.fromEntries(
       validForms.entries.where((element) => element.value.normalized != forms[element.key]?.normalized),
     );
-    state = VerbState(verb: state.verb, remarks: remarks);
+    state = VerbState(verb: state.verb, index: state.index, total: state.total, remarks: remarks);
   }
 }
 
 class VerbState {
   VerbState({
     required this.verb,
+    required this.index,
+    required this.total,
     this.remarks,
   });
 
   final Verb verb;
   final Map<VerbForm, String>? remarks;
+  final index;
+  final total;
 }
 
 extension VerbStateExtensions on VerbState {

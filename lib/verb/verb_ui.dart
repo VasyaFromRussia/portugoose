@@ -42,36 +42,52 @@ class VerbTrainerWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(verbProvider);
 
-    return Container(
-      decoration: _cardDecoration,
+    return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Wrap(
-          direction: Axis.vertical,
-          crossAxisAlignment: WrapCrossAlignment.center,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Text(
-                state.verb.infinitive,
-                style: Theme.of(context).textTheme.headline3,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: LinearProgressIndicator(
+                value: state.index / state.total,
+                minHeight: 10,
               ),
             ),
-            SizedBox(
-              width: 500,
-              child: Table(
-                columnWidths: const {
-                  0: FractionColumnWidth(0.3),
-                  2: FixedColumnWidth(50),
-                },
-                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                children: validForms.map((form) {
-                  final remarks = state.remarks;
-                  final isCorrect = remarks != null ? !remarks.containsKey(form) : null;
-                  return _buildFormRow(context, form, isCorrect);
-                }).toList(),
+            const SizedBox(height: 16),
+            Container(
+              decoration: _cardDecoration,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        state.verb.infinitive,
+                        style: Theme.of(context).textTheme.headline3,
+                      ),
+                    ),
+                    Table(
+                      columnWidths: const {
+                        0: FractionColumnWidth(0.3),
+                        2: FixedColumnWidth(50),
+                      },
+                      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                      children: validForms.map((form) {
+                        final remarks = state.remarks;
+                        final isCorrect = remarks != null ? !remarks.containsKey(form) : null;
+                        return _buildFormRow(context, form, isCorrect);
+                      }).toList(),
+                    ),
+                  ],
+                ),
               ),
             ),
+            const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.all(16),
               child: ElevatedButton(
@@ -108,13 +124,14 @@ class VerbTrainerWidget extends ConsumerWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(4),
             child: TextField(
               controller: _textEditingControllers.putIfAbsent(form, () => TextEditingController()),
               style: Theme.of(context).textTheme.headline4,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0x88FBE8D4),
+                contentPadding: EdgeInsets.all(4),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
