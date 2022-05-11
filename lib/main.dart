@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:portugoose/numbers/verb_ui.dart';
+import 'package:portugoose/sentence.dart';
 import 'package:portugoose/verb/verb_ui.dart';
 
 
@@ -37,10 +39,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: Scaffold(
-        backgroundColor: const Color(0xFF8CCAC5),
-        body: Center(
-          child: VerbTrainerWidget(),
-        ),
+        body: SafeArea(child: SentenceTrainer()),
       ),
     ),
   );
