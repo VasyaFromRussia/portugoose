@@ -53,17 +53,8 @@ class _SentenceTrainerState extends State<SentenceTrainer> {
               ),
             ),
             const SizedBox(height: 16),
-            // Wrap(
-            //   spacing: 12,
-            //   children: [
-            //     Chip(text: "bem", onPressed: _onChipPressed),
-            //     Chip(text: "Não", onPressed: _onChipPressed),
-            //     Chip(text: "português", onPressed: _onChipPressed),
-            //     Chip(text: "falo", onPressed: _onChipPressed),
-            //   ],
-            // ),
             WordKeyboard(
-                text: "cerveja",
+              text: "cerveja",
               onEdit: (result) => setState(() => _answer = result),
             ),
             Expanded(child: Container()),
@@ -138,7 +129,12 @@ class _WordKeyboardState extends State<WordKeyboard> {
         Flexible(
             fit: FlexFit.tight,
             child: Padding(
-              padding: const EdgeInsets.all(6),
+              padding: EdgeInsets.only(
+                left: totalWeight == 1 ? 0 : 6,
+                top: 6,
+                right: totalWeight == _rowTotalWeight ? 0 : 6,
+                bottom: 6,
+              ),
               child: _getItemWidget(item),
             ),
             flex: itemWeight),
