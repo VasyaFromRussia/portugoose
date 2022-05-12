@@ -31,13 +31,20 @@ class _KeyboardState extends State<Keyboard> {
   void initState() {
     super.initState();
 
-    setState(() {
-      items
-        ..addAll(widget.text.split('').map((e) => LetterKeyboardItem(e)))
-        ..addAll(List.generate(_keysCount - items.length, (index) => EmptyKeyboardItem()))
-        ..shuffle()
-        ..insert(4, BackspaceKeyboardItem());
-    });
+    setState(() => _populate());
+  }
+
+  @override
+  void didUpdateWidget(Keyboard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.text != widget.text) {
+      setState(() {
+        result.clear();
+        _pressedButtons.clear();
+        _populate();
+      });
+    }
   }
 
   @override
@@ -143,6 +150,15 @@ class _KeyboardState extends State<Keyboard> {
     } else {
       throw "Unknown type";
     }
+  }
+
+  void _populate() {
+    items
+      ..clear()
+      ..addAll(widget.text.split('').map((e) => LetterKeyboardItem(e)))
+      ..addAll(List.generate(_keysCount - items.length, (index) => EmptyKeyboardItem()))
+      ..shuffle()
+      ..insert(4, BackspaceKeyboardItem());
   }
 }
 

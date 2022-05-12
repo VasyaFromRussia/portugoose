@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "322718004770",
+    "firebase_url": "https://portugoose-60053-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "portugoose-60053",
+    "storage_bucket": "portugoose-60053.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:322718004770:android:659cb646c9de5b98b47c7b",
+        "android_client_info": {
+          "package_name": "bear.octo.portugoose"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "322718004770-ugnvhji5coig8lthu2gqsre24b64ulc7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrZ3zyYtvIsET3RrgHLbc1Xl_QaR-pM14"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "322718004770-ugnvhji5coig8lthu2gqsre24b64ulc7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
