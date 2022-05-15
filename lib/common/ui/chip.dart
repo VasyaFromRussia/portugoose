@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:portugoose/common/ui/card.dart';
+import 'package:portugoose/common/ui/palette.dart';
 import 'package:portugoose/common/ui/text_theme.dart';
 
 class Chip extends StatefulWidget {
@@ -37,43 +39,30 @@ class _ChipState extends State<Chip> {
   }
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-        height: 38,
-        child: GestureDetector(
-          onTapDown: widget.isEnabled && widget.onPressed != null
-              ? (_) {
-                  widget.onPressed?.call(!_isPressed);
-                  _mustAnimateBack = !widget.isSticky;
-                  setState(() => _isPressed = !_isPressed);
-                }
-              : null,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 50),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: const Color(0xFFF2F2F7).withAlpha(_alpha),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFD1D1D6).withAlpha(_alpha),
-                  offset: _isPressed ? Offset.zero : const Offset(0, 2),
-                )
-              ],
-            ),
+  Widget build(BuildContext context) => GestureDetector(
+        onTapDown: widget.isEnabled && widget.onPressed != null
+            ? (_) {
+                widget.onPressed?.call(!_isPressed);
+                _mustAnimateBack = !widget.isSticky;
+                setState(() => _isPressed = !_isPressed);
+              }
+            : null,
+        onTapUp: (_) {
+          if (_mustAnimateBack) {
+            _mustAnimateBack = false;
+            setState(() => _isPressed = !_isPressed);
+          }
+        },
+        child: CardContainer(
+          height: 38,
+          radius: 12,
+          color: Palette.grey100,
+          shadowOffset: const Offset(0, 2),
+          shadowColor: _isPressed ? null : Palette.grey500,
+          child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: AnimatedDefaultTextStyle(
-              child: Center(child: widget.child),
-              duration: const Duration(milliseconds: 150),
-              style: buttonStyle.copyWith(
-                color: const Color(0xFF1C1C1E).withAlpha(_alpha),
-              ),
-            ),
+            child: Center(child: widget.child),
           ),
-          onTapUp: (_) {
-            if (_mustAnimateBack) {
-              _mustAnimateBack = false;
-              setState(() => _isPressed = !_isPressed);
-            }
-          },
         ),
       );
 }
