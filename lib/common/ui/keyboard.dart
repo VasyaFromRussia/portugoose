@@ -2,15 +2,36 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart' hide Chip;
 import 'package:portugoose/common/ui/chip.dart';
+import 'package:collection/collection.dart';
 
 class Keyboard extends StatefulWidget {
-  const Keyboard({
-    required this.text,
+  static const _keysCount = 22;
+
+  factory Keyboard.text({
+    required String text,
+    required void Function(String) onEdit,
+  }) =>
+      Keyboard._(
+        items: _generateItemsForText(text, _keysCount),
+        onEdit: onEdit,
+      );
+
+  factory Keyboard.bingo({
+    required List<int> numbers,
+    required void Function(String) onEdit,
+  }) =>
+      Keyboard._(
+        items: _generateItemsForBingo(numbers, 24),
+        onEdit: onEdit,
+      );
+
+  const Keyboard._({
+    required this.items,
     required this.onEdit,
     Key? key,
   }) : super(key: key);
 
-  final String text;
+  final List<KeyboardItem> items;
   final void Function(String text) onEdit;
 
   @override
@@ -18,31 +39,20 @@ class Keyboard extends StatefulWidget {
 }
 
 class _KeyboardState extends State<Keyboard> {
-  static const _keysCount = 22;
   static const _rowTotalWeight = 6;
-
-  late final List<KeyboardItem> items = [];
 
   final _pressedButtons = Queue<Key>();
 
   final List<String> result = [];
 
   @override
-  void initState() {
-    super.initState();
-
-    setState(() => _populate());
-  }
-
-  @override
   void didUpdateWidget(Keyboard oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.text != widget.text) {
+    if (!const ListEquality().equals(oldWidget.items, widget.items)) {
       setState(() {
         result.clear();
         _pressedButtons.clear();
-        _populate();
       });
     }
   }
@@ -52,7 +62,7 @@ class _KeyboardState extends State<Keyboard> {
     final List<List<Widget>> rows = [];
 
     var totalWeight = 0;
-    for (var item in items) {
+    for (var item in widget.items) {
       if (totalWeight == 0) {
         rows.add([]);
       }
@@ -132,15 +142,15 @@ class _KeyboardState extends State<Keyboard> {
         ),
         isEnabled: false,
       );
-    } else if (item is LetterKeyboardItem) {
+    } else if (item is SymbolKeyboardItem) {
       final key = ValueKey(item);
       return Chip(
         key: key,
-        child: Text(item.letter),
+        child: Text(item.symbol),
         onPressed: (isPressed) {
           if (isPressed) {
             _pressedButtons.add(key);
-            result.add(item.letter);
+            result.add(item.symbol);
             widget.onEdit(result.join());
           }
         },
@@ -151,25 +161,58 @@ class _KeyboardState extends State<Keyboard> {
       throw "Unknown type";
     }
   }
-
-  void _populate() {
-    items
-      ..clear()
-      ..addAll(widget.text.split('').map((e) => LetterKeyboardItem(e)))
-      ..addAll(List.generate(_keysCount - items.length, (index) => EmptyKeyboardItem()))
-      ..shuffle()
-      ..insert(4, BackspaceKeyboardItem());
-  }
 }
 
 abstract class KeyboardItem {}
 
 class EmptyKeyboardItem implements KeyboardItem {}
 
-class LetterKeyboardItem implements KeyboardItem {
-  LetterKeyboardItem(this.letter);
+class SymbolKeyboardItem implements KeyboardItem {
+  SymbolKeyboardItem(
+    this.symbol, [
+    this.appearance = SymbolKeyboardItemAppearance.regular,
+  ]);
 
-  final String letter;
+  final String symbol;
+  final SymbolKeyboardItemAppearance appearance;
 }
 
 class BackspaceKeyboardItem implements KeyboardItem {}
+
+enum SymbolKeyboardItemAppearance {
+  regular,
+  correct,
+  error,
+}
+
+List<KeyboardItem> _generateItemsForText(String text, int keysCount) {
+  final items = <KeyboardItem>[];
+  items
+    ..addAll(text.split('').map((e) => SymbolKeyboardItem(e)).toList())
+    ..addAll(List.generate(keysCount - items.length, (index) => EmptyKeyboardItem()))
+    ..shuffle()
+    ..insert(4, BackspaceKeyboardItem());
+
+  return items;
+}
+
+List<KeyboardItem> _generateItemsForBingo(List<int> numbers, int keysCount) {
+  final items = <KeyboardItem>[];
+
+  items
+    ..addAll(numbers.map((e) => SymbolKeyboardItem("$e")).toList())
+    ..addAll(List<KeyboardItem>.generate(keysCount - items.length, (index) => EmptyKeyboardItem()))
+    ..shuffle();
+
+  return items;
+}
+
+class Number {
+  Number({
+    required this.value,
+    this.isCorrect,
+  });
+
+  final int value;
+  bool? isCorrect;
+}

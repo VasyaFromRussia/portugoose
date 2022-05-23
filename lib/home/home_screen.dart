@@ -17,6 +17,12 @@ class HomeScreen extends StatelessWidget {
                     'Adjectives trainer',
                   ),
                 ),
+                TextButton(
+                  onPressed: () => context.go('/bingo'),
+                  child: const Text(
+                    'Bingo',
+                  ),
+                ),
               ],
             ),
           ),

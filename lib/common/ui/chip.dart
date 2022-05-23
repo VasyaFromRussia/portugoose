@@ -10,6 +10,7 @@ class Chip extends StatefulWidget {
     this.isEnabled = true,
     this.isSticky = true,
     this.isPressed = false,
+    this.color = Palette.grey100,
     Key? key,
   }) : super(key: key);
 
@@ -18,6 +19,7 @@ class Chip extends StatefulWidget {
   final bool isEnabled;
   final bool isPressed;
   final bool isSticky;
+  final Color color;
 
   @override
   State<Chip> createState() => _ChipState();
@@ -56,7 +58,7 @@ class _ChipState extends State<Chip> {
         child: CardContainer(
           height: 38,
           radius: 12,
-          color: Palette.grey100,
+          color: widget.color,
           shadowOffset: const Offset(0, 2),
           shadowColor: _isPressed ? null : Palette.grey500,
           child: Padding(

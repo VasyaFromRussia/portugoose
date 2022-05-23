@@ -89,7 +89,7 @@ class _SentenceTrainerState extends State<SentenceTrainer> {
                                   ),
                           ),
                           const SizedBox(height: 16),
-                          Keyboard(
+                          Keyboard.text(
                             text: _word.pt,
                             onEdit: (result) => setState(() => _answer = result),
                           ),
